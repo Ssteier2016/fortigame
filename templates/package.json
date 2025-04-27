@@ -1,1 +1,16 @@
-{"name":"fortigame-frontend","version":"1.0.0","description":"Frontend con Phaser.js","main":"src/main.js","scripts":{},"dependencies":{"phaser":"^3.88.2"}}
+{
+  "name": "fortibotton-frontend",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "vite",
+    "build": "vite build"
+  },
+  "dependencies": {
+    "phaser": "^3.80.1",
+    "socket.io-client": "^4.7.2",
+    "@rexrainbow/phaser3-rex-plugins": "^1.1.65"
+  },
+  "devDependencies": {
+    "vite": "^4.0.0"
+  }
+}
