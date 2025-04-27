@@ -14,3 +14,9 @@ Juego 2D multijugador de combate, recolección e intercambio de cartas, ambienta
    - Backend: `cd venv && npm install`
    - Frontend: `cd templates && npm install`
 3. Configurar `.env` en `/venv`:
+PORT=3000 MONGODB_URI=mongodb://localhost:27017/fortibotton4. Iniciar:
+- Backend: `cd venv && npm start`
+- Frontend: `cd templates && npm start`
+
+## Despliegue
+- URL: https://fortibotton.onrender.comInstrucciones:Ve a /FortiBotton.Crea o edita README.md.Pega el código.Commitea con: "Añadir README.md".
