@@ -1,0 +1,1 @@
+{"name": "fortigame-backend", "version": "1.0.0", "description": "Backend con Node.js y Socket.io", "main": "server.js", "scripts": {}, "dependencies": {}}
