@@ -8,16 +8,24 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: "*" } });
 
+// Conexión a MongoDB
 mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log("Conectado a MongoDB"))
   .catch((err) => {
     console.error("Error MongoDB:", err);
-    process.exit(1); // Salir si no se conecta a MongoDB
+    process.exit(1); // Salir si no se conecta
   });
 
+// Servir archivos estáticos
 app.use(express.static("../templates"));
 
-// Manejador de errores para rutas no encontradas
+// Ruta de prueba
+app.get("/test", (req, res) => {
+  console.log("Solicitud recibida en /test");
+  res.send("Servidor funcionando correctamente");
+});
+
+// Manejador de rutas no encontradas
 app.use((req, res, next) => {
   console.log(`Ruta no encontrada: ${req.url}`);
   res.status(404).send("404: Recurso no encontrado");
