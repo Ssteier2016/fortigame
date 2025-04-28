@@ -4,11 +4,19 @@ const http = require("http");
 const { Server } = require("socket.io");
 require("dotenv").config();
 
+// Suprimir advertencia de Mongoose
+mongoose.set("strictQuery", true);
+
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: "*" } });
 
-// Registrar todas las solicitudes
+// Optimizar Socket.IO
+io.engine.on("connection_error", (err) => {
+  console.error("Error de conexión Socket.IO:", err);
+});
+
+// Registrar solicitudes (limitado para reducir logs)
 app.use((req, res, next) => {
   console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
   next();
@@ -16,7 +24,7 @@ app.use((req, res, next) => {
 
 // Ruta de prueba
 app.get("/test", (req, res) => {
-  console.log("Solicitud recibida en /test");
+  console.log(`[${new Date().toISOString()}] Solicitud recibida en /test`);
   res.send("Servidor funcionando correctamente");
 });
 
@@ -38,7 +46,7 @@ mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTop
 
 // Manejador de rutas no encontradas
 app.use((req, res, next) => {
-  console.log(`Ruta no encontrada: ${req.url}`);
+  console.log(`[${new Date().toISOString()}] Ruta no encontrada: ${req.url}`);
   res.status(404).send("404: Recurso no encontrado");
 });
 
