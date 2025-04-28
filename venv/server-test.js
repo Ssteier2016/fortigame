@@ -2,12 +2,12 @@ const express = require("express");
 const app = express();
 
 app.get("/", (req, res) => {
-  console.log("Solicitud recibida en /");
+  console.log(`[${new Date().toISOString()}] Solicitud recibida en /`);
   res.send("¡Servidor de prueba funcionando!");
 });
 
 app.get("/test", (req, res) => {
-  console.log("Solicitud recibida en /test");
+  console.log(`[${new Date().toISOString()}] Solicitud recibida en /test`);
   res.send("Servidor de prueba: Ruta /test");
 });
 
