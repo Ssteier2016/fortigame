@@ -6,9 +6,10 @@ export default class InventoryScene extends Phaser.Scene {
   }
 
   preload() {
-    this.load.image("jaguar", "../../assets/sprites/jaguar.png");
-    this.load.image("chimera", "../../assets/sprites/chimera.png");
-    this.load.image("condor", "../../assets/sprites/condor.png");
+    // Recursos gráficos comentados temporalmente hasta que se suban
+    // this.load.image("jaguar", "../../assets/sprites/jaguar.png");
+    // this.load.image("chimera", "../../assets/sprites/chimera.png");
+    // this.load.image("condor", "../../assets/sprites/condor.png");
   }
 
   create() {
@@ -25,7 +26,8 @@ export default class InventoryScene extends Phaser.Scene {
       const y = 200 + Math.floor(index / 2) * 200;
 
       this.add.rectangle(x, y, 150, 200, 0xffffff);
-      this.add.image(x, y - 50, card.name.toLowerCase()).setScale(0.5);
+      // this.add.image(x, y - 50, card.name.toLowerCase()).setScale(0.5); // Comentado
+      this.add.rectangle(x, y - 50, 64, 64, 0x00ff00); // Placeholder
       this.add.text(x + 50, y - 90, card.cardId, { color: "#000" });
       this.add.text(x - 60, y - 90, card.attackLife, { color: "#00ff00" });
       this.add.text(x - 60, y + 80, `${card.experience}exp./${card.level}lv.`, { color: "#000" });
