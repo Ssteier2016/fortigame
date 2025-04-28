@@ -8,22 +8,33 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: "*" } });
 
-// Conexión a MongoDB
-mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => console.log("Conectado a MongoDB"))
-  .catch((err) => {
-    console.error("Error MongoDB:", err);
-    process.exit(1); // Salir si no se conecta
-  });
-
-// Servir archivos estáticos
-app.use(express.static("../templates"));
+// Registrar todas las solicitudes
+app.use((req, res, next) => {
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+  next();
+});
 
 // Ruta de prueba
 app.get("/test", (req, res) => {
   console.log("Solicitud recibida en /test");
   res.send("Servidor funcionando correctamente");
 });
+
+// Servir archivos estáticos
+try {
+  app.use(express.static("../templates"));
+  console.log("Configurado para servir archivos estáticos desde ../templates");
+} catch (err) {
+  console.error("Error al configurar archivos estáticos:", err);
+}
+
+// Conexión a MongoDB
+mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => console.log("Conectado a MongoDB"))
+  .catch((err) => {
+    console.error("Error MongoDB:", err);
+    process.exit(1);
+  });
 
 // Manejador de rutas no encontradas
 app.use((req, res, next) => {
