@@ -9,27 +9,38 @@ export default class GameScene extends Phaser.Scene {
   }
 
   preload() {
-    this.load.tilemapTiledJSON("palermo", "../assets/maps/palermo.json");
-    this.load.image("tiles", "../assets/tilesets/palermo.png");
-    this.load.spritesheet("player", "../assets/sprites/player.png", { frameWidth: 32, frameHeight: 32 });
-    this.load.image("jaguar", "../assets/sprites/jaguar.png");
-    this.load.image("chimera", "../assets/sprites/chimera.png");
-    this.load.image("condor", "../assets/sprites/condor.png");
+    // Recursos gráficos comentados temporalmente hasta que se suban
+    // this.load.tilemapTiledJSON("palermo", "../assets/maps/palermo.json");
+    // this.load.image("tiles", "../assets/tilesets/palermo.png");
+    // this.load.spritesheet("player", "../assets/sprites/player.png", { frameWidth: 32, frameHeight: 32 });
+    // this.load.image("jaguar", "../assets/sprites/jaguar.png");
+    // this.load.image("chimera", "../assets/sprites/chimera.png");
+    // this.load.image("condor", "../assets/sprites/condor.png");
     this.load.plugin("rexvirtualjoystickplugin", VirtualJoystickPlugin, true);
   }
 
   create() {
+    // Crear un fondo básico para evitar pantalla en blanco
+    this.add.rectangle(400, 300, 800, 600, 0x000000);
+
+    // Mapa y colisiones comentados hasta que se añadan recursos
+    /*
     const map = this.make.tilemap({ key: "palermo" });
     const tileset = map.addTilesetImage("tileset", "tiles");
     const groundLayer = map.createLayer("Ground", tileset, 0, 0);
     const collisionLayer = map.createLayer("Collisions", tileset, 0, 0);
     collisionLayer.setCollisionByProperty({ collides: true });
+    */
 
-    this.player = this.physics.add.sprite(100, 100, "player");
-    this.physics.add.collider(this.player, collisionLayer);
+    // Jugador como un rectángulo placeholder
+    this.player = this.physics.add.rectangle(100, 100, 32, 32, 0xffffff);
+    this.physics.world.enable(this.player);
+    // this.physics.add.collider(this.player, collisionLayer); // Comentado
     this.cameras.main.startFollow(this.player, true, 0.1, 0.1);
-    this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
+    this.cameras.main.setBounds(0, 0, 800, 600); // Límites temporales
 
+    // Animaciones comentadas hasta que se añada player.png
+    /*
     this.anims.create({
       key: "walk-down",
       frames: this.anims.generateFrameNumbers("player", { start: 0, end: 7 }),
@@ -54,6 +65,7 @@ export default class GameScene extends Phaser.Scene {
       frameRate: 10,
       repeat: -1,
     });
+    */
 
     this.cursors = this.input.keyboard.createCursorKeys();
     this.joystick = this.plugins.get("rexvirtualjoystickplugin").add(this, {
@@ -73,8 +85,9 @@ export default class GameScene extends Phaser.Scene {
       Object.keys(players).forEach((id) => {
         if (id !== this.socket.id) {
           if (!this.players[id]) {
-            this.players[id] = this.physics.add.sprite(players[id].x, players[id].y, "player");
-            this.physics.add.collider(this.players[id], collisionLayer);
+            this.players[id] = this.physics.add.rectangle(players[id].x, players[id].y, 32, 32, 0x00ff00);
+            this.physics.world.enable(this.players[id]);
+            // this.physics.add.collider(this.players[id], collisionLayer); // Comentado
           } else {
             this.players[id].setPosition(players[id].x, players[id].y);
           }
@@ -82,21 +95,22 @@ export default class GameScene extends Phaser.Scene {
       });
     });
 
-    const wildCard = this.physics.add.sprite(200, 200, "jaguar").setInteractive();
-    this.physics.add.collider(wildCard, collisionLayer);
+    // Cartas como rectángulos placeholders
+    const wildCard = this.physics.add.rectangle(200, 200, 64, 64, 0xff0000).setInteractive();
+    // this.physics.add.collider(wildCard, collisionLayer); // Comentado
     wildCard.on("pointerdown", () => {
       this.scene.start("CombatScene", { opponent: { cardId: "#001", name: "Jaguar", attackLife: 50 } });
     });
 
-    const collectibleCard = this.physics.add.sprite(250, 150, "condor").setInteractive();
-    this.physics.add.collider(collectibleCard, collisionLayer);
+    const collectibleCard = this.physics.add.rectangle(250, 150, 64, 64, 0x0000ff).setInteractive();
+    // this.physics.add.collider(collectibleCard, collisionLayer); // Comentado
     collectibleCard.on("pointerdown", () => {
       this.socket.emit("collectCard", { cardId: "#003", name: "Cóndor", attackLife: 30 });
       collectibleCard.destroy();
     });
 
-    const cardPackage = this.physics.add.sprite(300, 300, "chimera").setInteractive();
-    this.physics.add.collider(cardPackage, collisionLayer);
+    const cardPackage = this.physics.add.rectangle(300, 300, 64, 64, 0xffff00).setInteractive();
+    // this.physics.add.collider(cardPackage, collisionLayer); // Comentado
     cardPackage.on("pointerdown", () => {
       this.socket.emit("collectCard", { cardId: "#002", name: "Quimera", attackLife: 70 });
       cardPackage.destroy();
@@ -128,9 +142,9 @@ export default class GameScene extends Phaser.Scene {
     }
 
     if (direction) {
-      this.player.anims.play(direction, true);
+      // this.player.anims.play(direction, true); // Comentado
     } else {
-      this.player.anims.stop();
+      // this.player.anims.stop(); // Comentado
     }
 
     this.socket.emit("updatePosition", { x: this.player.x, y: this.player.y });
