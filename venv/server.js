@@ -4,31 +4,22 @@ const http = require("http");
 const { Server } = require("socket.io");
 require("dotenv").config();
 
-// Suprimir advertencia de Mongoose
 mongoose.set("strictQuery", true);
 
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: "*" } });
 
-// Optimizar Socket.IO
-io.engine.on("connection_error", (err) => {
-  console.error("Error de conexión Socket.IO:", err);
-});
-
-// Registrar solicitudes (limitado para reducir logs)
 app.use((req, res, next) => {
   console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
   next();
 });
 
-// Ruta de prueba
 app.get("/test", (req, res) => {
   console.log(`[${new Date().toISOString()}] Solicitud recibida en /test`);
   res.send("Servidor funcionando correctamente");
 });
 
-// Servir archivos estáticos
 try {
   app.use(express.static("../templates"));
   console.log("Configurado para servir archivos estáticos desde ../templates");
@@ -36,7 +27,6 @@ try {
   console.error("Error al configurar archivos estáticos:", err);
 }
 
-// Conexión a MongoDB
 mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log("Conectado a MongoDB"))
   .catch((err) => {
@@ -44,13 +34,11 @@ mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTop
     process.exit(1);
   });
 
-// Manejador de rutas no encontradas
 app.use((req, res, next) => {
   console.log(`[${new Date().toISOString()}] Ruta no encontrada: ${req.url}`);
   res.status(404).send("404: Recurso no encontrado");
 });
 
-// Manejador de errores global
 app.use((err, req, res, next) => {
   console.error("Error del servidor:", err.stack);
   res.status(500).send("500: Error interno del servidor");
@@ -124,7 +112,6 @@ server.listen(PORT, () => {
   console.log(`Servidor en http://localhost:${PORT}`);
 });
 
-// Manejar errores no capturados
 process.on("uncaughtException", (err) => {
   console.error("Error no capturado:", err);
 });
