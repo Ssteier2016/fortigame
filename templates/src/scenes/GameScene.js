@@ -30,7 +30,6 @@ export default class GameScene extends Phaser.Scene {
     this.cameras.main.startFollow(this.player, true, 0.1, 0.1);
     this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
 
-    // Animaciones
     this.anims.create({
       key: "walk-down",
       frames: this.anims.generateFrameNumbers("player", { start: 0, end: 7 }),
@@ -56,7 +55,6 @@ export default class GameScene extends Phaser.Scene {
       repeat: -1,
     });
 
-    // Controles
     this.cursors = this.input.keyboard.createCursorKeys();
     this.joystick = this.plugins.get("rexvirtualjoystickplugin").add(this, {
       x: 100,
@@ -66,7 +64,6 @@ export default class GameScene extends Phaser.Scene {
       thumb: this.add.circle(0, 0, 25, 0xcccccc),
     });
 
-    // Socket.io
     this.socket = io();
     this.socket.on("connect", () => {
       this.socket.emit("newPlayer", { x: this.player.x, y: this.player.y });
@@ -85,14 +82,12 @@ export default class GameScene extends Phaser.Scene {
       });
     });
 
-    // Carta salvaje (Jaguar)
     const wildCard = this.physics.add.sprite(200, 200, "jaguar").setInteractive();
     this.physics.add.collider(wildCard, collisionLayer);
     wildCard.on("pointerdown", () => {
       this.scene.start("CombatScene", { opponent: { cardId: "#001", name: "Jaguar", attackLife: 50 } });
     });
 
-    // Carta suelta (Cóndor)
     const collectibleCard = this.physics.add.sprite(250, 150, "condor").setInteractive();
     this.physics.add.collider(collectibleCard, collisionLayer);
     collectibleCard.on("pointerdown", () => {
@@ -100,7 +95,6 @@ export default class GameScene extends Phaser.Scene {
       collectibleCard.destroy();
     });
 
-    // Paquete (Quimera)
     const cardPackage = this.physics.add.sprite(300, 300, "chimera").setInteractive();
     this.physics.add.collider(cardPackage, collisionLayer);
     cardPackage.on("pointerdown", () => {
@@ -108,7 +102,6 @@ export default class GameScene extends Phaser.Scene {
       cardPackage.destroy();
     });
 
-    // Inventario
     this.input.keyboard.on("keydown-I", () => {
       this.scene.start("InventoryScene");
     });
