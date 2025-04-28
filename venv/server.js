@@ -10,9 +10,24 @@ const io = new Server(server, { cors: { origin: "*" } });
 
 mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log("Conectado a MongoDB"))
-  .catch((err) => console.error("Error MongoDB:", err));
+  .catch((err) => {
+    console.error("Error MongoDB:", err);
+    process.exit(1); // Salir si no se conecta a MongoDB
+  });
 
 app.use(express.static("../templates"));
+
+// Manejador de errores para rutas no encontradas
+app.use((req, res, next) => {
+  console.log(`Ruta no encontrada: ${req.url}`);
+  res.status(404).send("404: Recurso no encontrado");
+});
+
+// Manejador de errores global
+app.use((err, req, res, next) => {
+  console.error("Error del servidor:", err.stack);
+  res.status(500).send("500: Error interno del servidor");
+});
 
 const players = {};
 
@@ -33,32 +48,40 @@ io.on("connection", (socket) => {
   });
 
   socket.on("collectCard", async (cardData) => {
-    const Card = require("./models/Card");
-    const Player = require("./models/Player");
-    const card = new Card({
-      cardId: cardData.cardId,
-      name: cardData.name,
-      attackLife: cardData.attackLife,
-      owner: socket.id,
-    });
-    await card.save();
-    await Player.findOneAndUpdate(
-      { socketId: socket.id },
-      { $push: { cards: card._id }, name: `Jugador${socket.id.slice(0, 4)}` },
-      { upsert: true }
-    );
+    try {
+      const Card = require("./models/Card");
+      const Player = require("./models/Player");
+      const card = new Card({
+        cardId: cardData.cardId,
+        name: cardData.name,
+        attackLife: cardData.attackLife,
+        owner: socket.id,
+      });
+      await card.save();
+      await Player.findOneAndUpdate(
+        { socketId: socket.id },
+        { $push: { cards: card._id }, name: `Jugador${socket.id.slice(0, 4)}` },
+        { upsert: true }
+      );
+    } catch (err) {
+      console.error("Error al guardar carta:", err);
+    }
   });
 
   socket.on("combatResult", async (data) => {
-    const Card = require("./models/Card");
-    const card = await Card.findOne({ cardId: data.winner.cardId, owner: socket.id });
-    if (card) {
-      card.experience += data.expGained;
-      if (card.experience >= 600) card.level = 4;
-      else if (card.experience >= 300) card.level = 3;
-      else if (card.experience >= 100) card.level = 2;
-      card.attackLife = card.attackLife + (card.level - 1) * 10;
-      await card.save();
+    try {
+      const Card = require("./models/Card");
+      const card = await Card.findOne({ cardId: data.winner.cardId, owner: socket.id });
+      if (card) {
+        card.experience += data.expGained;
+        if (card.experience >= 600) card.level = 4;
+        else if (card.experience >= 300) card.level = 3;
+        else if (card.experience >= 100) card.level = 2;
+        card.attackLife = card.attackLife + (card.level - 1) * 10;
+        await card.save();
+      }
+    } catch (err) {
+      console.error("Error al actualizar carta:", err);
     }
   });
 
@@ -72,4 +95,13 @@ io.on("connection", (socket) => {
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
   console.log(`Servidor en http://localhost:${PORT}`);
+});
+
+// Manejar errores no capturados
+process.on("uncaughtException", (err) => {
+  console.error("Error no capturado:", err);
+});
+
+process.on("unhandledRejection", (err) => {
+  console.error("Promesa rechazada no manejada:", err);
 });
